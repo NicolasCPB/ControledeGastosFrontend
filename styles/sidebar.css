@@ -1,0 +1,10 @@
+.submitFiltro {
+    margin-top: 8px;
+    width: 50%;
+}
+
+.divButtonFiltro {
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+}
