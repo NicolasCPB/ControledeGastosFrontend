@@ -96,6 +96,21 @@ const AddTransaction = {
 
         App.reload()
     },
+    edit(identificador, index) {
+        try {
+            fetch(baseUrl + "/editarTransacao" + "/" + identificador, {
+                method: 'PUT'
+            })
+            .then(res => {
+                App.reload()
+            })
+        } catch (error) {
+            console.error('Erro na requisição:', error);
+        }
+        
+
+        App.reload()
+    },
     incomes() { // Somar tipoTransacaos
         let income = 0
 
@@ -183,8 +198,9 @@ const DOM = {
         <td class="descricao">${transactions.descricao}</td>
         <td class="${CSSclass}">${valor}</td>
         <td class="data">${dataFormatada}</td>
-        <td>
+        <td class="acoes">
             <img onclick="AddTransaction.remove(${transactions.identificador}, ${transactions.index})" src="./assets/minus.svg" class="remove" alt="Remover Transação">
+            <img onclick="window.alert('Funcionalidade em desenvolvimento.')" src="./assets/edit.svg" class="edit" alt="Editar Transação">
         </td>
         `
         return html
