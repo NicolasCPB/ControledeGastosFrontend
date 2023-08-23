@@ -310,6 +310,7 @@ const Form = {
     },
 
     clearFields() {
+        Form.categoria.value = null;
         Form.descricao.value = "";
         Form.valor.value = "";
         Form.tipoTransacao.checked = false;
