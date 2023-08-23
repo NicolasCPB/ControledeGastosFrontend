@@ -74,12 +74,11 @@ const AddTransaction = {
                 }
                 Storage.set(AddTransaction.all);
                 DOM.addTransaction(transaction, AddTransaction.all.length - 1);
+                App.reload()
         })
         .catch(error => {
             console.error('Erro na requisição:', error);
         });
-
-        App.reload()
     },
     remove(identificador, index) {
         try {
