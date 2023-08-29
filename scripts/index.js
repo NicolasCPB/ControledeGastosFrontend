@@ -207,7 +207,7 @@ const DOM = {
         <td class="data">${dataFormatada}</td>
         <td class="acoes">
             <img onclick="AddTransaction.remove(${transactions.identificador}, ${transactions.index})" src="./assets/minus.svg" class="remove" alt="Remover Transação">
-            <img onclick="window.alert('Funcionalidade em desenvolvimento.')" src="./assets/edit.svg" class="edit" alt="Editar Transação">
+            <img onclick="window.alert('Funcionalidade em desenvolvimento. Entre em contato com o suporte técnico, que no caso é o amor da sua vida.')" src="./assets/edit.svg" class="edit" alt="Editar Transação">
         </td>
         `
         return html
