@@ -390,8 +390,6 @@ const Filtro = {
     async filtrar(filtro) {
         const endpoint = baseUrl + "/listarTransacoesPorFiltro";
         const queryParams = new URLSearchParams(filtro);
-        console.log(filtro)
-        console.log(queryParams)
         try {
             const response = await fetch(`${endpoint}?${queryParams}`);   
             const data = await response.json();
@@ -411,7 +409,6 @@ const Filtro = {
         event.preventDefault()
         try {
             const filtro = Filtro.formatValues();
-            console.log(filtro)
             Filtro.filtrar(filtro); 
         } catch (error) {
             console.warn(error.message);
@@ -472,7 +469,6 @@ const App = {
 
 const Exportacao = {
     exportarParaPDF() {
-        console.log("chamou")
         const tableData = [];
         const table = document.getElementById("data-table");
       
