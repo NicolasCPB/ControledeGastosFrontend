@@ -143,6 +143,8 @@ const Categoria = {
             const data = await response.json();
             var selectSidebar = document.querySelector("#categoriaSidebar");
             var selectModal = document.querySelector("#categoriaModal");
+            this.clearCategorias(selectModal)
+            this.clearCategorias(selectSidebar)
             var option = document.createElement("option");
             option.text = "Selecione";
             option.value = "";
@@ -165,6 +167,11 @@ const Categoria = {
         }
     },
 
+    clearCategorias(elemento) {
+        while (elemento.options.length > 0) {
+            elemento.remove(0);
+        }
+    }
 }
 
 const DOM = {
