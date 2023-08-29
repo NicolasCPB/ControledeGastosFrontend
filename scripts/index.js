@@ -53,10 +53,10 @@ const Storage = {
     }
 }
 
-const AddTransaction = {
+const Transaction = {
     all: Storage.get(),
     add(transaction) {
-        AddTransaction.all.push(transaction);
+        Transaction.all.push(transaction);
         var json = JSON.stringify(transaction)
         const requestOptions = {
             method: 'POST',
@@ -72,8 +72,8 @@ const AddTransaction = {
                 if (data.mensagem.includes("excedido")) {
                     Utils.showCustomAlert(data.mensagem, 'warning')
                 }
-                Storage.set(AddTransaction.all);
-                DOM.addTransaction(transaction, AddTransaction.all.length - 1);
+                Storage.set(Transaction.all);
+                DOM.addTransaction(transaction, Transaction.all.length - 1);
                 App.reload()
         })
         .catch(error => {
@@ -86,7 +86,7 @@ const AddTransaction = {
                 method: 'DELETE'
             })
             .then(res => {
-                AddTransaction.all.splice(index, 1)
+                Transaction.all.splice(index, 1)
                 App.reload()
             })
         } catch (error) {
@@ -114,7 +114,7 @@ const AddTransaction = {
     incomes() { // Somar tipoTransacaos
         let income = 0
 
-        AddTransaction.all.forEach(transaction => {
+        Transaction.all.forEach(transaction => {
             if (transaction.valor > 0) {
                 income += transaction.valor
             }
@@ -124,7 +124,7 @@ const AddTransaction = {
     expenses() { // Somar saídas
         let expense = 0
 
-        AddTransaction.all.forEach(transaction => {
+        Transaction.all.forEach(transaction => {
             if (transaction.valor < 0) {
                 expense += transaction.valor
             }
@@ -206,7 +206,7 @@ const DOM = {
         <td class="${CSSclass}">${valor}</td>
         <td class="data">${dataFormatada}</td>
         <td class="acoes">
-            <img onclick="AddTransaction.remove(${transactions.identificador}, ${transactions.index})" src="./assets/minus.svg" class="remove" alt="Remover Transação">
+            <img onclick="Transaction.remove(${transactions.identificador}, ${transactions.index})" src="./assets/minus.svg" class="remove" alt="Remover Transação">
             <img onclick="window.alert('Funcionalidade em desenvolvimento. Entre em contato com o suporte técnico, que no caso é o amor da sua vida.')" src="./assets/edit.svg" class="edit" alt="Editar Transação">
         </td>
         `
@@ -328,7 +328,7 @@ const Form = {
     },
 
     saveTransaction(transaction) {
-        AddTransaction.add(transaction)
+        Transaction.add(transaction)
     },
 
     clearFields() {
@@ -497,12 +497,6 @@ const Exportacao = {
 App.init()
 
 function toastError(message = "ERRO!") {
-    /*let a = document.querySelector("???").innerHTML = `
-    <div id="toast">
-    <div class="img">Icon</div>
-    <div class="descricao">${message}</div>
-    </div>`*/
-
     const toastId = document.querySelector("#toast")
     toastId.className = "show"
 
