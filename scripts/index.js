@@ -470,6 +470,34 @@ const App = {
     }
 };
 
+const Exportacao = {
+    exportarParaPDF() {
+        console.log("chamou")
+        const tableData = [];
+        const table = document.getElementById("data-table");
+      
+        for (let i = 0; i < table.rows.length; i++) {
+          const row = [];
+          for (let j = 0; j < table.rows[i].cells.length; j++) {
+            row.push(table.rows[i].cells[j].textContent);
+          }
+          tableData.push(row);
+        }
+      
+        const docDefinition = {
+          content: [
+            { text: "Gastos do mês", style: "header" },
+            { table: { body: tableData } }
+          ],
+          styles: {
+            header: { fontSize: 18, bold: true }
+          }
+        };
+      
+        pdfMake.createPdf(docDefinition).download("gastos.pdf");
+    }
+}
+
 App.init()
 
 function toastError(message = "ERRO!") {

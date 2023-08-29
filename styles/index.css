@@ -165,7 +165,13 @@ td.expense {
     display: table-cell;
     white-space: nowrap;
 }
-
+.botaoExport {
+    width: 25%;
+    float: right;
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
 
 
 img.remove {

@@ -108,8 +108,7 @@
             </section>
 
             <section id="transaction">
-                <h2 class="sr-only">Transações</h2>
-    
+                <button onclick="Exportacao.exportarParaPDF()" class="botaoExport">Exportar para PDF</button>
                 <table id="data-table">
                     <thead>
                         <tr>
@@ -180,6 +179,9 @@
     <a href="#" onclick="Modal.open()" class="float-button">
         <img src="./assets/float-plus.svg" alt="Adicionar" width="16px">
     </a>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/vfs_fonts.js"></script>
 
     <script src="./scripts/index.js" type="text/javascript"></script>
     
