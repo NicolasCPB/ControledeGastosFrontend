@@ -96,10 +96,14 @@ const Transaction = {
 
         App.reload()
     },
-    edit(identificador, index) {
+    edit(transaction) {
         try {
-            fetch(baseUrl + "/editarTransacao" + "/" + identificador, {
-                method: 'PUT'
+            fetch(baseUrl + "/editarTransacao" + "/" + ModalEdit.identificador, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(transaction)
             })
             .then(res => {
                 App.reload()
@@ -107,9 +111,6 @@ const Transaction = {
         } catch (error) {
             console.error('Erro na requisição:', error);
         }
-        
-
-        App.reload()
     },
     incomes() { // Somar tipoTransacaos
         let income = 0
@@ -132,7 +133,7 @@ const Transaction = {
         return expense
     },
     total() { // tipoTransacaos menos saídas
-        return AddTransaction.incomes() + AddTransaction.expenses()
+        return Transaction.incomes() + Transaction.expenses()
     }
 }
 
@@ -141,10 +142,15 @@ const Categoria = {
         try {
             const response = await fetch(baseUrl + "/listarCategorias");
             const data = await response.json();
+
             var selectSidebar = document.querySelector("#categoriaSidebar");
             var selectModal = document.querySelector("#categoriaModal");
-            this.clearCategorias(selectModal)
+            var selectModalEdit = document.querySelector("#categoriaModalEdit");
+
             this.clearCategorias(selectSidebar)
+            this.clearCategorias(selectModal)
+            this.clearCategorias(selectModalEdit)
+
             var option = document.createElement("option");
             option.text = "Selecione";
             option.value = "";
@@ -152,15 +158,19 @@ const Categoria = {
             data.data.forEach(function(categoria) {
                 const optionSidebar = document.createElement("option");
                 const optionModal = document.createElement("option");
+                const optionModalEdit = document.createElement("option");
 
                 optionSidebar.value = categoria.nome;
                 optionModal.value = categoria.nome;
+                optionModalEdit.value = categoria.nome;
                 
                 optionSidebar.text = categoria.nome;
                 optionModal.text = categoria.nome;
+                optionModalEdit.text = categoria.nome;
 
                 selectSidebar.appendChild(optionSidebar);
                 selectModal.appendChild(optionModal);
+                selectModalEdit.appendChild(optionModalEdit);
             });
         } catch (error) {
             console.error('Erro na requisição:', error);
@@ -200,6 +210,7 @@ const DOM = {
         const ano = transactions.data.substring(0, 4);
 
         const dataFormatada = `${dia}/${mes}/${ano}`;
+        transacaoJson = JSON.stringify(transactions)
         const html = `
         <td class="categoria">${transactions.categoria}</td>
         <td class="descricao">${transactions.descricao}</td>
@@ -207,7 +218,7 @@ const DOM = {
         <td class="data">${dataFormatada}</td>
         <td class="acoes">
             <img onclick="Transaction.remove(${transactions.identificador}, ${transactions.index})" src="./assets/minus.svg" class="remove" alt="Remover Transação">
-            <img onclick="window.alert('Funcionalidade em desenvolvimento. Entre em contato com o suporte técnico, que no caso é o amor da sua vida.')" src="./assets/edit.svg" class="edit" alt="Editar Transação">
+            <img onclick="ModalEdit.open(${transactions.identificador}, ${JSON.stringify(transactions).replace(/"/g, '&quot;')})" src="./assets/edit.svg" class="edit" alt="Editar Transação">
         </td>
         `
         return html
@@ -492,6 +503,93 @@ const Exportacao = {
       
         pdfMake.createPdf(docDefinition).download("gastos.pdf");
     }
+}
+
+const ModalEdit = {
+    transactionData: {},
+    identificador: 0,
+    open(identificadorR, transactionString) {
+        this.transactionData = transactionString
+        this.identificador = identificadorR
+
+        document.querySelector("#categoriaModalEdit").value = this.transactionData.categoria;
+        document.querySelector("#descricaoModalEdit").value = this.transactionData.descricao;
+        document.querySelector("#valorModalEdit").value = this.transactionData.valor.toString().replace("-", "");
+        document.querySelector("#tipoTransacaoModalEdit").checked = this.transactionData.tipo === "entrada";
+        document.querySelector("#dataModalEdit").value = this.transactionData.data;
+
+        document
+            .querySelector("#modal-edit")
+            .classList
+            .add("active")
+    },
+    close() {
+        document
+            .querySelector("#modal-edit")
+            .classList
+            .remove("active")
+    },
+}
+
+const FormEdit = {
+    categoria: document.querySelector("select#categoriaModalEdit"),
+    descricao: document.querySelector("input#descricaoModalEdit"),
+    valor: document.querySelector("input#valorModalEdit"),
+    tipoTransacao: document.querySelector("input#tipoTransacaoModalEdit"),
+    data: document.querySelector("input#dataModalEdit"),
+    
+    getValues() {
+        return {
+            categoria: FormEdit.categoria.value,
+            descricao: FormEdit.descricao.value,
+            valor: FormEdit.valor.value,
+            tipoTransacao: FormEdit.tipoTransacao.checked,
+            data: FormEdit.data.value,
+        };
+    },
+
+    validateFields() {
+        const { categoria, valor, data } = FormEdit.getValues();
+        if (valor.trim() === "" || data.trim() === "" || categoria.trim() === "") {
+            throw new Error("Por favor, preencha todos os campos!");
+        }
+    },
+
+    formatValues() {
+        let { categoria, descricao, valor, tipoTransacao, data} = FormEdit.getValues();
+
+        if (tipoTransacao){
+            tipoTransacao = 'Entrada'
+        } else {
+            tipoTransacao = 'Saida'
+        }
+
+        return {
+            categoria,
+            descricao,
+            valor,
+            tipoTransacao,
+            data,
+        };
+    },
+
+    editTransaction(transaction) {
+        Transaction.edit(transaction)
+    },
+
+    submit(event) {
+        event.preventDefault();
+        try {
+            FormEdit.validateFields(); 
+            const transaction = FormEdit.formatValues(); 
+            FormEdit.editTransaction(transaction);
+
+            ModalEdit.close(); 
+        } catch (error) {
+            console.warn(error.message);
+            toastError(error.message);
+        }
+    },
 }
 
 App.init()
