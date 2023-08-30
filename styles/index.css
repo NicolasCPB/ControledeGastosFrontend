@@ -154,11 +154,11 @@ td.descricao {
     color: var(--dark-blue);
 }
 td.income {
-    width: 150px;
+    width: 200px;
     color: var(--money-green);
 }
 td.expense {
-    width: 150px;
+    width: 200px;
     color: var(--money-red);
 }
 .acoes {
