@@ -482,22 +482,68 @@ const Exportacao = {
     exportarParaPDF() {
         const tableData = [];
         const table = document.getElementById("data-table");
-      
+        gastoComida = 0
+        gastoLanche = 0
+        gastoFesta = 0
+        gastoUber = 0
+        gastoLazer = 0
+        gastoRoupa = 0
+        gastoCartao = 0
+        gastoOutros = 0
         for (let i = 0; i < table.rows.length; i++) {
           const row = [];
           for (let j = 0; j < table.rows[i].cells.length; j++) {
+            if (table.rows[i].cells[j].textContent == "Comida") {
+                gastoComida = gastoComida + parseFloat(table.rows[i].cells[2].textContent.substring(3).replace(',', '.'))
+            }
+            categoryPdf = table.rows[i].cells[j].textContent
+            switch(table.rows[i].cells[j].textContent) {
+                case "Comida":
+                    gastoComida = gastoComida + parseFloat(table.rows[i].cells[2].textContent.substring(3).replace(',', '.'))
+                    break
+                case "Lanche":
+                    gastoLanche = gastoLanche + parseFloat(table.rows[i].cells[2].textContent.substring(3).replace(',', '.'))
+                    break
+                case "Festa":
+                    gastoFesta = gastoFesta + parseFloat(table.rows[i].cells[2].textContent.substring(3).replace(',', '.'))
+                    break
+                case "Uber":
+                    gastoUber = gastoUber + parseFloat(table.rows[i].cells[2].textContent.substring(3).replace(',', '.'))
+                    break
+                case "Lazer":
+                    gastoLazer = gastoLazer + parseFloat(table.rows[i].cells[2].textContent.substring(3).replace(',', '.'))
+                    break
+                case "Roupa":
+                    gastoRoupa = gastoRoupa + parseFloat(table.rows[i].cells[2].textContent.substring(3).replace(',', '.'))
+                    break
+                case "Cartão de crédito":
+                    gastoCartao = gastoCartao + parseFloat(table.rows[i].cells[2].textContent.substring(3).replace(',', '.'))
+                    break
+                case "Outros":
+                    gastoOutros = gastoOutros + parseFloat(table.rows[i].cells[2].textContent.substring(3).replace(',', '.'))
+                    break
+            }
             row.push(table.rows[i].cells[j].textContent);
           }
           tableData.push(row);
         }
-      
+        
         const docDefinition = {
           content: [
             { text: "Gastos do mês", style: "header" },
+            { text: `Comida: ${gastoComida.toFixed(2)}`, style: "categoria"},
+            { text: `Lanche: ${gastoLanche.toFixed(2)}`, style: "categoria"},
+            { text: `Festa: ${gastoFesta.toFixed(2)}`, style: "categoria"},
+            { text: `Uber: ${gastoUber.toFixed(2)}`, style: "categoria"},
+            { text: `Lazer: ${gastoLazer.toFixed(2)}`, style: "categoria"},
+            { text: `Roupa: ${gastoRoupa.toFixed(2)}`, style: "categoria"},
+            { text: `Cartão de crédito: ${gastoCartao.toFixed(2)}`, style: "categoria"},
+            { text: `Outros: ${gastoOutros.toFixed(2)}`, style: "categoria"},
             { table: { body: tableData } }
           ],
           styles: {
-            header: { fontSize: 18, bold: true }
+            header: { fontSize: 18, bold: true },
+            categoria: { fontSize: 12 }
           }
         };
       
