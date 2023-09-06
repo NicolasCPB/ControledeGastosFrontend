@@ -490,47 +490,49 @@ const Exportacao = {
         gastoRoupa = 0
         gastoCartao = 0
         gastoOutros = 0
+        console.log(table)
         for (let i = 0; i < table.rows.length; i++) {
           const row = [];
           for (let j = 0; j < table.rows[i].cells.length; j++) {
-            if (table.rows[i].cells[j].textContent == "Comida") {
-                gastoComida = gastoComida + parseFloat(table.rows[i].cells[2].textContent.substring(3).replace(',', '.'))
-            }
             categoryPdf = table.rows[i].cells[j].textContent
             switch(table.rows[i].cells[j].textContent) {
                 case "Comida":
-                    gastoComida = gastoComida + parseFloat(table.rows[i].cells[2].textContent.substring(3).replace(',', '.'))
+                    gastoComida = gastoComida + parseFloat(table.rows[i].cells[2].textContent.substring(3).replace(/\./g, '').replace(',', '.'))
                     break
                 case "Lanche":
-                    gastoLanche = gastoLanche + parseFloat(table.rows[i].cells[2].textContent.substring(3).replace(',', '.'))
+                    gastoLanche = gastoLanche + parseFloat(table.rows[i].cells[2].textContent.substring(3).replace(/\./g, '').replace(',', '.'))
                     break
                 case "Festa":
-                    gastoFesta = gastoFesta + parseFloat(table.rows[i].cells[2].textContent.substring(3).replace(',', '.'))
+                    gastoFesta = gastoFesta + parseFloat(table.rows[i].cells[2].textContent.substring(3).replace(/\./g, '').replace(',', '.'))
                     break
                 case "Uber":
-                    gastoUber = gastoUber + parseFloat(table.rows[i].cells[2].textContent.substring(3).replace(',', '.'))
+                    gastoUber = gastoUber + parseFloat(table.rows[i].cells[2].textContent.substring(3).replace(/\./g, '').replace(',', '.'))
                     break
                 case "Lazer":
-                    gastoLazer = gastoLazer + parseFloat(table.rows[i].cells[2].textContent.substring(3).replace(',', '.'))
+                    gastoLazer = gastoLazer + parseFloat(table.rows[i].cells[2].textContent.substring(3).replace(/\./g, '').replace(',', '.'))
                     break
                 case "Roupa":
-                    gastoRoupa = gastoRoupa + parseFloat(table.rows[i].cells[2].textContent.substring(3).replace(',', '.'))
+                    gastoRoupa = gastoRoupa + parseFloat(table.rows[i].cells[2].textContent.substring(3).replace(/\./g, '').replace(',', '.'))
                     break
                 case "Cartão de crédito":
-                    gastoCartao = gastoCartao + parseFloat(table.rows[i].cells[2].textContent.substring(3).replace(',', '.'))
+                    console.log(table.rows[i].cells[2].textContent.substring(3).replace(/\./g, '').replace(',', '.'))
+                    console.log(parseFloat(table.rows[i].cells[2].textContent.substring(3).replace(/\./g, '').replace(',', '.')))
+                    gastoCartao = gastoCartao + parseFloat(table.rows[i].cells[2].textContent.substring(3).replace(/\./g, '').replace(',', '.'))
                     break
                 case "Outros":
-                    gastoOutros = gastoOutros + parseFloat(table.rows[i].cells[2].textContent.substring(3).replace(',', '.'))
+                    gastoOutros = gastoOutros + parseFloat(table.rows[i].cells[2].textContent.substring(3).replace(/\./g, '').replace(',', '.'))
                     break
             }
             row.push(table.rows[i].cells[j].textContent);
           }
           tableData.push(row);
         }
-        
+        gastoTotal = gastoComida + gastoLanche + gastoFesta + gastoUber + gastoLazer + gastoRoupa + gastoCartao + gastoOutros
+        console.log(gastoComida)
         const docDefinition = {
           content: [
             { text: "Gastos do mês", style: "header" },
+            { text: `Total: ${gastoTotal.toFixed(2)}`, style: "categoria"},
             { text: `Comida: ${gastoComida.toFixed(2)}`, style: "categoria"},
             { text: `Lanche: ${gastoLanche.toFixed(2)}`, style: "categoria"},
             { text: `Festa: ${gastoFesta.toFixed(2)}`, style: "categoria"},
