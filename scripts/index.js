@@ -57,16 +57,16 @@ const Transaction = {
     all: Storage.get(),
     add(transaction) {
         Transaction.all.push(transaction);
-        var json = JSON.stringify(transaction)
+        var transacao = Utils.convertToTransacaoDTO(transaction)
         const requestOptions = {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
             },
-            body: json
+            body: JSON.stringify(transacao)
         };
           
-        fetch(baseUrl + "/salvarTransacao", requestOptions)
+        fetch(baseUrl + "/transacao/salvarTransacao", requestOptions)
             .then(response => response.json())
             .then(data => {
                 if (data.mensagem.includes("excedido")) {
@@ -82,7 +82,7 @@ const Transaction = {
     },
     remove(identificador, index) {
         try {
-            fetch(baseUrl + "/excluirTransacao" + "/" + identificador, {
+            fetch(baseUrl + "/transacao/excluirTransacao" + "/" + identificador, {
                 method: 'DELETE'
             })
             .then(res => {
@@ -98,12 +98,12 @@ const Transaction = {
     },
     edit(transaction) {
         try {
-            fetch(baseUrl + "/editarTransacao" + "/" + ModalEdit.identificador, {
+            fetch(baseUrl + "/transacao/editarTransacao" + "/" + ModalEdit.identificador, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(transaction)
+                body: JSON.stringify(Utils.convertToTransacaoDTO(transaction))
             })
             .then(res => {
                 App.reload()
@@ -140,7 +140,7 @@ const Transaction = {
 const Categoria = {
     async loadCategorias() {
         try {
-            const response = await fetch(baseUrl + "/listarCategorias");
+            const response = await fetch(baseUrl + "/categoria/listarCategorias");
             const data = await response.json();
 
             var selectSidebar = document.querySelector("#categoriaSidebar");
@@ -155,7 +155,7 @@ const Categoria = {
             option.text = "Selecione";
             option.value = "";
             selectSidebar.appendChild(option)
-            data.data.forEach(function(categoria) {
+            data.forEach(function(categoria) {
                 const optionSidebar = document.createElement("option");
                 const optionModal = document.createElement("option");
                 const optionModalEdit = document.createElement("option");
@@ -195,7 +195,7 @@ const DOM = {
 
     innerHTMLTransaction(transactions) {
         var valor
-        if (transactions.tipoTransacao == 'Saida') {
+        if (transactions.tipoTransacao.nome == 'Saída') {
             transactions.valor = transactions.valor * -1
         }
         const CSSclass = transactions.valor > 0 ? "income":"expense"
@@ -212,7 +212,7 @@ const DOM = {
         const dataFormatada = `${dia}/${mes}/${ano}`;
         transacaoJson = JSON.stringify(transactions)
         const html = `
-        <td class="categoria">${transactions.categoria}</td>
+        <td class="categoria">${transactions.categoria.nome}</td>
         <td class="descricao">${transactions.descricao}</td>
         <td class="${CSSclass}">${valor}</td>
         <td class="data">${dataFormatada}</td>
@@ -229,10 +229,10 @@ const DOM = {
         var totSaida = 0;
         var transactions = JSON.parse(localStorage.getItem('allTransactions'));
         for (var i = 0; i < transactions.length; i++) {
-            if (transactions[i].tipoTransacao == 'Entrada') {
+            if (transactions[i].tipoTransacao.nome == 'Entrada') {
                 totEntrada += transactions[i].valor
             }
-            if (transactions[i].tipoTransacao == 'Saida') {
+            if (transactions[i].tipoTransacao.nome == 'Saída') {
                 totSaida += transactions[i].valor
             }
         }
@@ -293,6 +293,33 @@ const Utils = {
           confirmButtonColor: '#3085d6',
           confirmButtonText: 'Ok'
         });
+    },
+    convertToFiltroDTO(filtro) {
+        return novoFiltro = {
+            descricao: filtro.descricao,
+            valor: filtro.valor,
+            dataInicial: filtro.dataInicial,
+            dataFinal: filtro.dataFinal,
+            categoria: {
+                nome: filtro.categoria
+            },
+            tipoTransacao: {
+                nome: filtro.tipoTransacao
+            }
+        }
+    },
+    convertToTransacaoDTO(transacao) {
+        return novaTransacao = {
+            descricao: transacao.descricao,
+            valor: transacao.valor,
+            data: transacao.data,
+            categoria: {
+                nome: transacao.categoria
+            },
+            tipoTransacao: {
+                nome: transacao.tipoTransacao
+            }
+        }
     }
 }
 
@@ -399,16 +426,21 @@ const Filtro = {
     },
 
     async filtrar(filtro) {
-        const endpoint = baseUrl + "/listarTransacoesPorFiltro";
-        const queryParams = new URLSearchParams(filtro);
+        const filtroDTO = Utils.convertToFiltroDTO(filtro)
         try {
-            const response = await fetch(`${endpoint}?${queryParams}`);   
+            const response = await fetch(baseUrl + "/transacao/listarTransacoesPorFiltro", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(filtroDTO)
+            });
             const data = await response.json();
             DOM.clearTransactions();
             
-            Storage.setTransactions(data.data)
+            Storage.setTransactions(data)
             DOM.updateBalance()
-            data.data.forEach((transaction, index) => {
+            data.forEach((transaction, index) => {
                 DOM.addTransaction(transaction, index);
             });
         } catch (error) {
@@ -458,13 +490,13 @@ const App = {
 
     async fetchTransactions() {
         try {
-            const response = await fetch(baseUrl + "/listarTransacoesPorFiltro");
+            const response = await fetch(baseUrl + "/transacao/listarTransacoes");
             const data = await response.json();
             DOM.clearTransactions();
 
-            Storage.setTransactions(data.data)
+            Storage.setTransactions(data)
             DOM.updateBalance()
-            data.data.forEach((transaction, index) => {
+            data.forEach((transaction, index) => {
                 DOM.addTransaction(transaction, index);
             });
         } catch (error) {
@@ -490,7 +522,6 @@ const Exportacao = {
         gastoRoupa = 0
         gastoCartao = 0
         gastoOutros = 0
-        console.log(table)
         for (let i = 0; i < table.rows.length; i++) {
           const row = [];
           for (let j = 0; j < table.rows[i].cells.length; j++) {
@@ -515,8 +546,6 @@ const Exportacao = {
                     gastoRoupa = gastoRoupa + parseFloat(table.rows[i].cells[2].textContent.substring(3).replace(/\./g, '').replace(',', '.'))
                     break
                 case "Cartão de crédito":
-                    console.log(table.rows[i].cells[2].textContent.substring(3).replace(/\./g, '').replace(',', '.'))
-                    console.log(parseFloat(table.rows[i].cells[2].textContent.substring(3).replace(/\./g, '').replace(',', '.')))
                     gastoCartao = gastoCartao + parseFloat(table.rows[i].cells[2].textContent.substring(3).replace(/\./g, '').replace(',', '.'))
                     break
                 case "Outros":
@@ -528,7 +557,6 @@ const Exportacao = {
           tableData.push(row);
         }
         gastoTotal = gastoComida + gastoLanche + gastoFesta + gastoUber + gastoLazer + gastoRoupa + gastoCartao + gastoOutros
-        console.log(gastoComida)
         const docDefinition = {
           content: [
             { text: "Gastos do mês", style: "header" },
