@@ -212,6 +212,26 @@
         </div>
     </div>
 
+    <div class="modal-overlay" id="modal-categoria">
+        <div class="modal">
+            <div id="form">
+                <h2>Nova Categoria</h2>
+
+                <form action="" onsubmit="FormCategoria.submit(event)">
+                    <div class="input-group">
+                        <label for="nome" class="sr-only">Nome</label>
+                        <input type="text" id="nome" name="nome" placeholder="Nome">
+                    </div>
+
+                    <div class="input-group actions">
+                        <a href="#" onclick="ModalEdit.close()" class="button cancel">Cancelar</a>
+                        <button type="submit">Salvar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <div id="toast">
         <div class="img"><h1>×</h1></div>
         <div class="description">Por favor, preencha todos os campos!</div>
@@ -220,13 +240,16 @@
     <a href="#" onclick="Modal.open()" class="float-button">
         <img src="./assets/float-plus.svg" alt="Adicionar" width="16px">
     </a>
+    
+    <a href="#" onclick="ModalCategoria.open()" class="float-button" id="button2">
+        <img src="./assets/float-plus.svg" alt="Adicionar" width="16px">
+    </a>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/vfs_fonts.js"></script>
 
     <script src="./scripts/index.js" type="text/javascript"></script>
     
-    <!--Custo alert-->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.all.min.js"></script>
 
 </body>

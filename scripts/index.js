@@ -12,8 +12,7 @@ const Modal = {
             .querySelector(".modal-overlay")
             .classList
             .remove("active")
-    },
-
+    }
 }
 
 const CardColor = {
@@ -181,6 +180,25 @@ const Categoria = {
         while (elemento.options.length > 0) {
             elemento.remove(0);
         }
+    },
+
+    saveCategoria(category) {
+        const requestOptions = {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(category)
+        };
+          
+        fetch(baseUrl + "/categoria/salvarCategoria", requestOptions)
+            .then(response => response.json())
+            .then(data => {
+                App.reload()
+        })
+        .catch(error => {
+            console.error('Erro na requisição:', error);
+        });
     }
 }
 
@@ -661,6 +679,63 @@ const FormEdit = {
             FormEdit.editTransaction(transaction);
 
             ModalEdit.close(); 
+        } catch (error) {
+            console.warn(error.message);
+            toastError(error.message);
+        }
+    },
+}
+
+const ModalCategoria = {
+    open() {
+        document
+            .querySelector("#modal-categoria")
+            .classList
+            .add("active")
+    },
+    close() {
+        document
+            .querySelector("#modal-categoria")
+            .classList
+            .remove("active")
+    }
+}
+
+const FormCategoria = {
+    nome: document.querySelector("input#nome"),
+    
+    getValues() {
+        return {
+            nome: FormCategoria.nome.value
+        };
+    },
+
+    validateFields() {
+        const { nome } = FormCategoria.getValues();
+        if (nome == "" || nome == null) {
+            throw new Error("Por favor, preencha todos os campos!");
+        }
+    },
+
+    formatValues() {
+        let { nome } = FormCategoria.getValues();
+        return {
+            nome
+        };
+    },
+
+    saveCategory(category) {
+        Categoria.saveCategoria(category)
+    },
+
+    submit(event) {
+        event.preventDefault();
+        try {
+            FormCategoria.validateFields(); 
+            const category = FormCategoria.formatValues()
+            FormCategoria.saveCategory(category);
+
+            ModalCategoria.close(); 
         } catch (error) {
             console.warn(error.message);
             toastError(error.message);

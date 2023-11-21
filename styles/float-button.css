@@ -33,3 +33,6 @@
     -o-transition: all 0.3s;
 }
 
+#button2 {
+    left: 20px;
+}
