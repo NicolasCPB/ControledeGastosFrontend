@@ -1,4 +1,4 @@
-const baseUrl = "http://localhost:8080"
+const baseUrl = "http://ec2-3-16-42-103.us-east-2.compute.amazonaws.com:8080"
 
 const Modal = {
     open() {
